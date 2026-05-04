@@ -1,168 +1,470 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KhayleHR – Surveys</title>
     <style>
         @import url('https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700');
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Ubuntu', sans-serif; }
-        body { min-height: 100vh; background-color: ghostwhite; }
 
-        .container1 { display: grid; grid-template-columns: 220px 1fr; grid-template-rows: 63px 1fr; height: 100vh; overflow: hidden; }
-        .container1 aside { background-color: #789ecb; grid-column: 1/2; grid-row: 1/3; display: grid; grid-template-rows: 63px 1fr; z-index: 50; transition: transform 0.3s ease; }
-        .container1 aside > div:first-child { border-bottom: #6383a9 1px solid; border-right: #6383a9 1px solid; display: flex; align-items: center; }
-        .container1 aside > div:last-child { border-right: #6383a9 1px solid; overflow-y: auto; padding-bottom: 20px; }
-        .container1 aside div > h6 { font-size: 20px; color: white; padding-left: 14px; height: 100%; display: flex; align-items: center; }
-        .container1 aside div > h3 { color: #00000055; font-size: 12px; padding: 12px 0 0 12px; text-transform: uppercase; letter-spacing: 0.06em; }
-        .container1 aside div > div { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
-        .container1 aside div > div > a { padding: 10px 12px; background-color: #6383a9; border-radius: 10px; width: 90%; margin: auto; color: white; text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.25); transition: background 0.15s; display: block; font-size: 14px; }
-        .container1 aside div > div > a:hover { background-color: #0d356260; }
-        .container1 header { background-color: #789ecb; grid-column: 2/3; border-bottom: #6383a9 1px solid; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
-        .container1 header h4 { font-size: 22px; color: #0d3462; }
-        .container1 main { background-color: #fff; grid-column: 2/3; overflow-y: auto; }
-        .container1 main::-webkit-scrollbar { display: none; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Ubuntu', sans-serif;
+        }
 
-        .sidebar-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
-        .sidebar-toggle span { display: block; width: 22px; height: 3px; background: white; border-radius: 3px; transition: all 0.3s; }
-        .sidebar-toggle.open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
-        .sidebar-toggle.open span:nth-child(2) { opacity: 0; }
-        .sidebar-toggle.open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
-        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 40; opacity: 0; transition: opacity 0.3s; }
-        .sidebar-overlay.active { display: block; opacity: 1; }
+        body {
+            min-height: 100vh;
+            background-color: ghostwhite;
+        }
 
-        .filterbar { display: flex; align-items: center; padding: 0 16px; height: 56px; gap: 8px; flex-wrap: wrap; border-bottom: 1px solid #f0f0f0; }
-        .filter-tab { background-color: #c9d0e3; color: #0d3462; height: 34px; padding: 0 16px; border-radius: 10px; font-size: 14px; border: none; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
-        .filter-tab.active { background: #0d3462; color: white; }
+        .container1 {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            grid-template-rows: 63px 1fr;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-        .survey-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding: 14px 16px; }
-        .survey-card { background: #c9d0e3; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
-        .survey-card.new-survey { border: 2px solid #0d3462; }
-        .survey-card.faded { opacity: 0.65; }
-        .sc-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-        .sc-title { font-size: 15px; font-weight: 500; color: #0d3462; line-height: 1.3; }
-        .sc-status { font-size: 11px; padding: 3px 10px; border-radius: 99px; font-weight: 500; flex-shrink: 0; }
-        .sc-active { background: #0d3462; color: white; }
-        .sc-new    { background: #6383a9; color: white; }
-        .sc-done   { background: #789ecb; color: white; }
-        .sc-closed { background: #888780; color: white; }
-        .sc-desc { font-size: 13px; color: #0d346280; line-height: 1.5; }
-        .prog-bg { height: 5px; background: #789ecb; border-radius: 99px; overflow: hidden; }
-        .prog-fill { height: 100%; border-radius: 99px; background: #0d3462; }
-        .sc-due { font-size: 12px; color: #0d346270; }
-        .btn-survey { padding: 6px 16px; background: #0d3462; color: white; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; font-family: 'Ubuntu',sans-serif; align-self: flex-start; }
-        .btn-survey.secondary { background: #6383a9; }
-        .btn-survey:disabled { background: #c9d0e3; color: #0d346260; cursor: not-allowed; }
-        .btn-survey:not(:disabled):hover { opacity: 0.9; }
+        .container1 aside {
+            background-color: #789ecb;
+            grid-column: 1/2;
+            grid-row: 1/3;
+            display: grid;
+            grid-template-rows: 63px 1fr;
+            z-index: 50;
+            transition: transform 0.3s ease;
+        }
 
-        @media (max-width: 1024px) { .container1 { grid-template-columns: 185px 1fr; } }
-        @media (max-width: 900px)  { .survey-grid { grid-template-columns: 1fr; } }
+        .container1 aside>div:first-child {
+            border-bottom: #6383a9 1px solid;
+            border-right: #6383a9 1px solid;
+            display: flex;
+            align-items: center;
+        }
+
+        .container1 aside>div:last-child {
+            border-right: #6383a9 1px solid;
+            overflow-y: auto;
+            padding-bottom: 20px;
+        }
+
+        .container1 aside div>h6 {
+            font-size: 20px;
+            color: white;
+            padding-left: 14px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .container1 aside div>h3 {
+            color: #00000055;
+            font-size: 12px;
+            padding: 12px 0 0 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .container1 aside div>div {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .container1 aside div>div>a {
+            padding: 10px 12px;
+            background-color: #6383a9;
+            border-radius: 10px;
+            width: 90%;
+            margin: auto;
+            color: white;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+            transition: background 0.15s;
+            display: block;
+            font-size: 14px;
+        }
+
+        .container1 aside div>div>a:hover {
+            background-color: #0d356260;
+        }
+
+        .container1 header {
+            background-color: #789ecb;
+            grid-column: 2/3;
+            border-bottom: #6383a9 1px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .container1 header h4 {
+            font-size: 22px;
+            color: #0d3462;
+        }
+
+        .container1 main {
+            background-color: #fff;
+            grid-column: 2/3;
+            overflow-y: auto;
+        }
+
+        .container1 main::-webkit-scrollbar {
+            display: none;
+        }
+
+        .sidebar-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 4px;
+        }
+
+        .sidebar-toggle span {
+            display: block;
+            width: 22px;
+            height: 3px;
+            background: white;
+            border-radius: 3px;
+            transition: all 0.3s;
+        }
+
+        .sidebar-toggle.open span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+
+        .sidebar-toggle.open span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .sidebar-toggle.open span:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 40;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .filterbar {
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            height: 56px;
+            gap: 8px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .filter-tab {
+            background-color: #c9d0e3;
+            color: #0d3462;
+            height: 34px;
+            padding: 0 10px;
+            border-radius: 10px;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+
+        .filter-tab.active {
+            background: #0d3462;
+            color: white;
+        }
+
+        .survey-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            padding: 14px 16px;
+        }
+
+        .survey-card {
+            background: #c9d0e3;
+            border-radius: 10px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        .survey-card.new-survey {
+            border: 2px solid #0d3462;
+        }
+
+        .survey-card.faded {
+            opacity: 0.65;
+        }
+
+        .sc-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .sc-title {
+            font-size: 15px;
+            font-weight: 500;
+            color: #0d3462;
+            line-height: 1.3;
+        }
+
+        .sc-status {
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 99px;
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+
+        .sc-active {
+            background: #0d3462;
+            color: white;
+        }
+
+        .sc-new {
+            background: #6383a9;
+            color: white;
+        }
+
+        .sc-done {
+            background: #789ecb;
+            color: white;
+        }
+
+        .sc-closed {
+            background: #888780;
+            color: white;
+        }
+
+        .sc-desc {
+            font-size: 13px;
+            color: #0d346280;
+            line-height: 1.5;
+        }
+
+        .prog-bg {
+            height: 5px;
+            background: #789ecb;
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .prog-fill {
+            height: 100%;
+            border-radius: 99px;
+            background: #0d3462;
+        }
+
+        .sc-due {
+            font-size: 12px;
+            color: #0d346270;
+        }
+
+        .btn-survey {
+            padding: 6px 16px;
+            background: #0d3462;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            font-family: 'Ubuntu', sans-serif;
+            align-self: flex-start;
+        }
+
+        .btn-survey.secondary {
+            background: #6383a9;
+        }
+
+        .btn-survey:disabled {
+            background: #c9d0e3;
+            color: #0d346260;
+            cursor: not-allowed;
+        }
+
+        .btn-survey:not(:disabled):hover {
+            opacity: 0.9;
+        }
+
+        @media (max-width: 1024px) {
+            .container1 {
+                grid-template-columns: 185px 1fr;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .survey-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         @media (max-width: 768px) {
-            .container1 { grid-template-columns: 1fr; }
-            .container1 aside { position: fixed; top: 0; left: -240px; width: 230px; height: 100vh; grid-row: unset; }
-            .container1 aside.open { transform: translateX(240px); }
-            .container1 header, .container1 main { grid-column: 1; }
-            .sidebar-toggle { display: flex; }
-            .filterbar { height: auto; padding: 10px 16px; }
+            .container1 {
+                grid-template-columns: 1fr;
+            }
+
+            .container1 aside {
+                position: fixed;
+                top: 0;
+                left: -240px;
+                width: 230px;
+                height: 100vh;
+                grid-row: unset;
+            }
+
+            .container1 aside.open {
+                transform: translateX(240px);
+            }
+
+            .container1 header,
+            .container1 main {
+                grid-column: 1;
+            }
+
+            .sidebar-toggle {
+                display: flex;
+            }
+
+            .filterbar {
+                height: auto;
+                padding: 10px 16px;
+            }
         }
     </style>
 </head>
+
 <body>
 
-<div class="sidebar-overlay" id="overlay"></div>
+    <div class="sidebar-overlay" id="overlay"></div>
 
-<section class="container1">
-    <aside id="sidebar">
-        <div><h6>Khayle<span style="color:#0d3462;">HR</span></h6></div>
-        <div>
+    <section class="container1">
+        <aside id="sidebar">
             <div>
-                <h3>Overview</h3>
+                <h6>Khayle<span style="color:#0d3462;">HR</span></h6>
+            </div>
+            <div>
                 <div>
-                    <a href="dashboard.html">Dashboard</a>
-                    <a href="feedback.html">My Feedback</a>
-                    <a href="announcements.html">Announcements</a>
+                    <h3>Overview</h3>
+                    <div>
+                        <a href="dashboard.html">Dashboard</a>
+                        <a href="feedback.html">My Feedback</a>
+                        <a href="announcements.html">Announcements</a>
+                    </div>
                 </div>
-            </div>
-            <div>
-                <h3>Engage</h3>
                 <div>
-                    <a href="surveys.html" style="background-color:#0d3462;">Surveys</a>
-                    <a href="recognition.html">Recognition</a>
+                    <h3>Engage</h3>
+                    <div>
+                        <a href="surveys.html" style="background-color:#0d3462;">Surveys</a>
+                        <a href="recognition.html">Recognition</a>
+                    </div>
+                </div>
+                <div>
+                    <h3>Account</h3>
+                    <div><a href="profile.html">My Profile</a></div>
                 </div>
             </div>
-            <div>
-                <h3>Account</h3>
-                <div><a href="profile.html">My Profile</a></div>
-            </div>
-        </div>
-    </aside>
+        </aside>
 
-    <header>
-        <button class="sidebar-toggle" id="sidebarToggle"><span></span><span></span><span></span></button>
-        <h4>Surveys</h4>
-        <div style="width:30px;"></div>
-    </header>
+        <header>
+            <button class="sidebar-toggle" id="sidebarToggle"><span></span><span></span><span></span></button>
+            <h4>Surveys</h4>
+            <div style="width:30px;"></div>
+        </header>
 
-    <main>
-        <div class="filterbar">
-            <button class="filter-tab active" onclick="setTab(this)">All</button>
-            <button class="filter-tab" onclick="setTab(this)">Active</button>
-            <button class="filter-tab" onclick="setTab(this)">Completed</button>
-        </div>
-        <div class="survey-grid">
-            <div class="survey-card new-survey">
-                <div class="sc-header">
-                    <div class="sc-title">Q1 Employee Pulse</div>
-                    <span class="sc-status sc-new">New</span>
-                </div>
-                <div class="sc-desc">Monthly sentiment check covering workload, team dynamics, and manager support.</div>
-                <div class="prog-bg"><div class="prog-fill" style="width:0%"></div></div>
-                <div class="sc-due">Due Apr 30 · 8 questions</div>
-                <button class="btn-survey">Start survey</button>
+        <main>
+            <div class="filterbar">
+                <button class="filter-tab active" onclick="setTab(this)">All</button>
+                <button class="filter-tab" onclick="setTab(this)">Active</button>
+                <button class="filter-tab" onclick="setTab(this)">Completed</button>
             </div>
-            <div class="survey-card">
-                <div class="sc-header">
-                    <div class="sc-title">Manager Effectiveness</div>
-                    <span class="sc-status sc-active">Active</span>
+            <div class="survey-grid">
+                <div class="survey-card new-survey">
+                    <div class="sc-header">
+                        <div class="sc-title">Q1 Employee Pulse</div>
+                        <span class="sc-status sc-new">New</span>
+                    </div>
+                    <div class="sc-desc">Monthly sentiment check covering workload, team dynamics, and manager support.
+                    </div>
+                    <div class="prog-bg">
+                        <div class="prog-fill" style="width:0%"></div>
+                    </div>
+                    <div class="sc-due">Due Apr 30 · 8 questions</div>
+                    <button class="btn-survey">Start survey</button>
                 </div>
-                <div class="sc-desc">360-degree feedback on your direct manager covering communication, support, and clarity.</div>
-                <div class="prog-bg"><div class="prog-fill" style="width:60%;"></div></div>
-                <div class="sc-due">Due Apr 15 · 60% complete</div>
-                <button class="btn-survey secondary">Continue</button>
-            </div>
-            <div class="survey-card faded">
-                <div class="sc-header">
-                    <div class="sc-title">Onboarding Experience</div>
-                    <span class="sc-status sc-done">Completed</span>
+                <div class="survey-card">
+                    <div class="sc-header">
+                        <div class="sc-title">Manager Effectiveness</div>
+                        <span class="sc-status sc-active">Active</span>
+                    </div>
+                    <div class="sc-desc">360-degree feedback on your direct manager covering communication, support, and
+                        clarity.</div>
+                    <div class="prog-bg">
+                        <div class="prog-fill" style="width:60%;"></div>
+                    </div>
+                    <div class="sc-due">Due Apr 15 · 60% complete</div>
+                    <button class="btn-survey secondary">Continue</button>
                 </div>
-                <div class="sc-desc">Feedback from your first 30/60/90 day experience at the company.</div>
-                <div class="prog-bg"><div class="prog-fill" style="width:100%;"></div></div>
-                <div class="sc-due">Submitted Mar 1</div>
-                <button class="btn-survey secondary">View responses</button>
-            </div>
-            <div class="survey-card faded">
-                <div class="sc-header">
-                    <div class="sc-title">Benefits Satisfaction</div>
-                    <span class="sc-status sc-closed">Closed</span>
+                <div class="survey-card faded">
+                    <div class="sc-header">
+                        <div class="sc-title">Onboarding Experience</div>
+                        <span class="sc-status sc-done">Completed</span>
+                    </div>
+                    <div class="sc-desc">Feedback from your first 30/60/90 day experience at the company.</div>
+                    <div class="prog-bg">
+                        <div class="prog-fill" style="width:100%;"></div>
+                    </div>
+                    <div class="sc-due">Submitted Mar 1</div>
+                    <button class="btn-survey secondary">View responses</button>
                 </div>
-                <div class="sc-desc">Annual survey on health, wellness, and benefits package satisfaction.</div>
-                <div class="prog-bg"><div class="prog-fill" style="width:100%;"></div></div>
-                <div class="sc-due">Closed · Not participated</div>
-                <button class="btn-survey" disabled>Closed</button>
+                <div class="survey-card faded">
+                    <div class="sc-header">
+                        <div class="sc-title">Benefits Satisfaction</div>
+                        <span class="sc-status sc-closed">Closed</span>
+                    </div>
+                    <div class="sc-desc">Annual survey on health, wellness, and benefits package satisfaction.</div>
+                    <div class="prog-bg">
+                        <div class="prog-fill" style="width:100%;"></div>
+                    </div>
+                    <div class="sc-due">Closed · Not participated</div>
+                    <button class="btn-survey" disabled>Closed</button>
+                </div>
             </div>
-        </div>
-    </main>
-</section>
+        </main>
+    </section>
 
-<script>
-    const toggle = document.getElementById('sidebarToggle');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
-    function openSidebar()  { sidebar.classList.add('open'); overlay.classList.add('active'); toggle.classList.add('open'); document.body.style.overflow='hidden'; }
-    function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('active'); toggle.classList.remove('open'); document.body.style.overflow=''; }
-    toggle.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
-    overlay.addEventListener('click', closeSidebar);
-    function setTab(el) { el.closest('div').querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
-</script>
+    <script>
+        const toggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        function openSidebar() { sidebar.classList.add('open'); overlay.classList.add('active'); toggle.classList.add('open'); document.body.style.overflow = 'hidden'; }
+        function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('active'); toggle.classList.remove('open'); document.body.style.overflow = ''; }
+        toggle.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
+        overlay.addEventListener('click', closeSidebar);
+        function setTab(el) { el.closest('div').querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active')); el.classList.add('active'); }
+    </script>
 </body>
+
 </html>
