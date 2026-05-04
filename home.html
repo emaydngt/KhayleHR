@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KhayleHR</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700');
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Ubuntu', sans-serif; }
+
+        body { min-height: 100vh; background-color: ghostwhite; }
+
+        /* ── NAV ── */
+        header {
+            background-color: #789ecb;
+            height: 63px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        nav {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+        }
+        .nav-left { display: flex; align-items: center; gap: 1.9rem; height: 100%; }
+        .logo-text { font-size: 20px; font-weight: 700; color: white; }
+        .logo-text span { color: #0d3462; }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: #0d3462; }
+
+        .nav-right { display: flex; align-items: center; gap: 1.3rem; }
+        .nav-right a {
+            text-decoration: none;
+            padding: 8px 18px;
+            border-radius: 5px;
+            font-weight: 500;
+            transition: all 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .btn-login { background: white; color: #0d3462; }
+        .btn-login:hover { background: #071d36; color: white; transform: scale(0.95); }
+        .btn-signup { background: #0d3462; color: white; }
+        .btn-signup:hover { background: #071d36; transform: scale(0.95); }
+
+        /* Hamburger */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 4px;
+            background: none;
+            border: none;
+        }
+        .hamburger span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: white;
+            border-radius: 3px;
+            transition: all 0.3s;
+        }
+        .hamburger.open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+        .hamburger.open span:nth-child(2) { opacity: 0; }
+        .hamburger.open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+        /* Side Drawer */
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 200;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .overlay.active { display: block; opacity: 1; }
+
+        .side-menu {
+            position: fixed;
+            top: 0; right: -280px;
+            width: 260px;
+            height: 100vh;
+            background: #6383a9;
+            z-index: 300;
+            padding: 80px 30px 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: right 0.3s ease;
+        }
+        .side-menu.open { right: 0; }
+        .side-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            transition: color 0.2s;
+        }
+        .side-menu a:hover { color: #789ecb; }
+        .side-menu .side-auth {
+            margin-top: 20px;
+            width: 90%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border-bottom: none;
+            padding: 0;
+        }
+        .side-menu .side-auth a {
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            border-bottom: none;
+        }
+        .side-menu .side-auth .btn-login { background: white; color: #0d3462; }
+        .side-menu .side-auth .btn-signup { background: #789ecb; color: white; }
+        .close-btn {
+            position: absolute;
+            top: 20px; right: 20px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        /* ── HERO ── */
+        main {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: calc(100vh - 63px);
+            background-image: url('bg.png');
+            background-repeat: no-repeat;
+            background-position: right center;
+            background-size: 55vw;
+        }
+        .hero-left {
+            padding: 4rem;
+            display: flex;
+            align-items: center;
+        }
+        .hero-inner { max-width: 540px; }
+        .hero-inner h1 {
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            color: #6383a9;
+            line-height: 1.2;
+            animation: fadeUp 0.5s 0.3s ease both;
+        }
+        .hero-inner h1 span { color: #0d3462; }
+        .hero-inner p {
+            padding-top: 14px;
+            color: darkgray;
+            font-size: clamp(1rem, 1.5vw, 1.2rem);
+            line-height: 1.6;
+            word-spacing: 2px;
+            animation: fadeUp 0.7s 0.4s ease both;
+        }
+        .cta-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            padding-top: 24px;
+            animation: fadeUp 0.9s 0.5s ease both;
+        }
+        .cta-buttons a {
+            padding: 14px 24px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: transform 0.15s ease-out;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+        }
+        .cta-buttons a:first-child { background: #6383a9; color: #0d3462; }
+        .cta-buttons a:last-child { border: 1.5px solid #6383a9; color: #6383a9; }
+        .cta-buttons a:hover { transform: translateY(-4px); }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 1024px) {
+            main { background-size: 50vw; }
+        }
+        @media (max-width: 768px) {
+            .nav-links, .nav-right { display: none; }
+            .hamburger { display: flex; }
+            nav { padding: 0 20px; }
+
+            main {
+                grid-template-columns: 1fr;
+                background-image: none;
+                min-height: calc(100vh - 63px);
+            }
+            .hero-left { padding: 3rem 1.5rem; align-items: flex-start; }
+            .hero-inner h1 { font-size: clamp(1.8rem, 6vw, 2.4rem); }
+        }
+        @media (max-width: 480px) {
+            .hero-left { padding: 2rem 1.2rem; }
+            .cta-buttons { flex-direction: column; }
+            .cta-buttons a { text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <div class="nav-left">
+            <span class="logo-text">Khayle<span>HR</span></span>
+            <div class="nav-links">
+                <a href="home.html">Home</a>
+                <a href="feature.html">Features</a>
+                <a href="howitworks.html">How it Works</a>
+                <a href="about.html">About</a>
+            </div>
+        </div>
+        <div class="nav-right">
+            <a href="login.html" class="btn-login">LOG IN</a>
+            <a href="signup.html" class="btn-signup">SIGN UP</a>
+        </div>
+        <button class="hamburger" id="hamburger" aria-label="Open menu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+</header>
+
+<div class="overlay" id="overlay"></div>
+<nav class="side-menu" id="sideMenu">
+    <button class="close-btn" id="closeBtn">&times;</button>
+    <a href="home.html">Home</a>
+    <a href="feature.html">Features</a>
+    <a href="howitworks.html">How it Works</a>
+    <a href="about.html">About</a>
+    <div class="side-auth">
+        <a href="login.html" class="btn-login">LOG IN</a>
+        <a href="signup.html" class="btn-signup">SIGN UP</a>
+    </div>
+</nav>
+
+<main>
+    <div class="hero-left">
+        <div class="hero-inner">
+            <h1>Where <span>Employee Voice</span> Drives Organizational Change</h1>
+            <p>KhayleHR is a centralized employee feedback and communication system designed to support
+               successful information systems implementation through transparent dialogue and real-time insights.</p>
+            <div class="cta-buttons">
+                <a href="feature.html">Explore Features</a>
+                <a href="howitworks.html">See How It Works</a>
+            </div>
+        </div>
+    </div>
+    <div></div>
+</main>
+
+<script>
+    const hamburger = document.getElementById('hamburger');
+    const sideMenu  = document.getElementById('sideMenu');
+    const overlay   = document.getElementById('overlay');
+    const closeBtn  = document.getElementById('closeBtn');
+
+    function openMenu() {
+        sideMenu.classList.add('open');
+        overlay.classList.add('active');
+        hamburger.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeMenu() {
+        sideMenu.classList.remove('open');
+        overlay.classList.remove('active');
+        hamburger.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+    hamburger.addEventListener('click', openMenu);
+    closeBtn.addEventListener('click', closeMenu);
+    overlay.addEventListener('click', closeMenu);
+</script>
+</body>
+</html>

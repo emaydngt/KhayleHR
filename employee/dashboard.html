@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KhayleHR – Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Ubuntu', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: ghostwhite;
+        }
+
+        /* ── LAYOUT ── */
+        .container1 {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            grid-template-rows: 63px 1fr;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container1 aside {
+            background-color: #789ecb;
+            grid-column: 1/2;
+            grid-row: 1/3;
+            display: grid;
+            grid-template-rows: 63px 1fr;
+            z-index: 50;
+            transition: transform 0.3s ease;
+        }
+
+        .container1 aside>div:first-child {
+            border-bottom: #6383a9 1px solid;
+            border-right: #6383a9 1px solid;
+            display: flex;
+            align-items: center;
+        }
+
+        .container1 aside>div:last-child {
+            border-right: #6383a9 1px solid;
+            overflow-y: auto;
+            padding-bottom: 20px;
+        }
+
+        .container1 aside div>h6 {
+            font-size: 20px;
+            color: white;
+            padding-left: 14px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .container1 aside div>h3 {
+            color: #00000055;
+            font-size: 12px;
+            padding: 12px 0 0 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .container1 aside div>div {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .container1 aside div>div>a {
+            padding: 10px 12px;
+            background-color: #6383a9;
+            border-radius: 10px;
+            width: 90%;
+            margin: auto;
+            color: white;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+            transition: background 0.15s;
+            display: block;
+            font-size: 14px;
+        }
+
+        .container1 aside div>div>a:hover {
+            background-color: #0d356260;
+        }
+
+        .container1 header {
+            background-color: #789ecb;
+            grid-column: 2/3;
+            border-bottom: #6383a9 1px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .container1 header h4 {
+            font-size: 22px;
+            color: #0d3462;
+        }
+
+        .container1 header .header-right {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .container1 header .header-right button {
+            padding: 7px 18px;
+            background-color: #0d3462;
+            font-size: 0.9rem;
+            border-radius: 10px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.1s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            white-space: nowrap;
+        }
+
+        .container1 header .header-right button:hover {
+            background-color: #071d36;
+        }
+
+        .container1 main {
+            background-color: #fff;
+            grid-column: 2/3;
+            padding: clamp(14px, 2.5vw, 20px);
+            overflow-y: auto;
+        }
+
+        .container1 main::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Hamburger */
+        .sidebar-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 4px;
+        }
+
+        .sidebar-toggle span {
+            display: block;
+            width: 22px;
+            height: 3px;
+            background: white;
+            border-radius: 3px;
+            transition: all 0.3s;
+        }
+
+        .sidebar-toggle.open span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+
+        .sidebar-toggle.open span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .sidebar-toggle.open span:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 40;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* ── KPI ROW ── */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .kpi {
+            background: #c9d0e3;
+            border-radius: 10px;
+            padding: 14px 16px;
+            box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .kpi-label {
+            font-size: 12px;
+            color: #0d346280;
+            margin-bottom: 6px;
+        }
+
+        .kpi-val {
+            font-size: 22px;
+            font-weight: 500;
+            color: #0d3462;
+        }
+
+        .kpi-sub {
+            font-size: 11px;
+            color: #0d346260;
+            margin-top: 3px;
+        }
+
+        /* ── CARDS ── */
+        .dash-card {
+            background: #c9d0e3;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #0d3462;
+            margin-bottom: 10px;
+        }
+
+        .av-sm {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 500;
+            flex-shrink: 0;
+            background: #6383a9;
+            color: white;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .prog-bg {
+            height: 5px;
+            background: #789ecb;
+            border-radius: 99px;
+            overflow: hidden;
+            margin: 6px 0;
+        }
+
+        .prog-fill {
+            height: 100%;
+            border-radius: 99px;
+            background: #0d3462;
+        }
+
+        .btn-sm {
+            padding: 5px 14px;
+            background-color: #0d3462;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            font-family: 'Ubuntu', sans-serif;
+            margin-top: 8px;
+        }
+
+        .btn-sm:hover {
+            background: #071d36;
+        }
+
+        /* ── MODAL ── */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            padding: 16px;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 14px;
+            padding: 22px;
+            width: 100%;
+            max-width: 380px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-title {
+            font-size: 15px;
+            font-weight: 500;
+            color: #0d3462;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #c9d0e3;
+            font-size: 13px;
+            color: #0d3462;
+            font-family: 'Ubuntu', sans-serif;
+            background: #f5f7fb;
+            outline: none;
+        }
+
+        .modal-input:focus {
+            border-color: #6383a9;
+        }
+
+        .modal-textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #c9d0e3;
+            font-size: 13px;
+            color: #0d3462;
+            font-family: 'Ubuntu', sans-serif;
+            background: #f5f7fb;
+            resize: none;
+            height: 80px;
+            outline: none;
+        }
+
+        .modal-label {
+            font-size: 11px;
+            color: #0d346280;
+            margin-bottom: 4px;
+        }
+
+        .modal-btns {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .modal-btns button {
+            padding: 7px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            font-family: 'Ubuntu', sans-serif;
+            border: none;
+        }
+
+        .modal-cancel {
+            background: #c9d0e3;
+            color: #0d3462;
+        }
+
+        .modal-submit {
+            background: #0d3462;
+            color: white;
+        }
+
+        .stars-input {
+            display: flex;
+            gap: 4px;
+        }
+
+        .star-btn {
+            font-size: 20px;
+            cursor: pointer;
+            color: #c9d0e3;
+        }
+
+        .star-btn.lit {
+            color: #f5c518;
+        }
+
+        .modal-check {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #0d346280;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 1024px) {
+            .container1 {
+                grid-template-columns: 185px 1fr;
+            }
+
+            .kpi-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container1 {
+                grid-template-columns: 1fr;
+            }
+
+            .container1 aside {
+                position: fixed;
+                top: 0;
+                left: -240px;
+                width: 230px;
+                height: 100vh;
+                grid-row: unset;
+            }
+
+            .container1 aside.open {
+                transform: translateX(240px);
+            }
+
+            .container1 header,
+            .container1 main {
+                grid-column: 1;
+            }
+
+            .sidebar-toggle {
+                display: flex;
+            }
+
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .kpi-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .container1 header .header-right button {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .kpi-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar-overlay" id="overlay"></div>
+
+    <section class="container1">
+        <aside id="sidebar">
+            <div>
+                <h6>Khayle<span style="color:#0d3462;">HR</span></h6>
+            </div>
+            <div>
+                <div>
+                    <h3>Overview</h3>
+                    <div>
+                        <a href="dashboard.html" style="background-color:#0d3462;">Dashboard</a>
+                        <a href="feedback.html">My Feedback</a>
+                        <a href="announcements.html">Announcements</a>
+                    </div>
+                </div>
+                <div>
+                    <h3>Engage</h3>
+                    <div>
+                        <a href="surveys.html">Surveys</a>
+                        <a href="recognition.html">Recognition</a>
+                    </div>
+                </div>
+                <div>
+                    <h3>Account</h3>
+                    <div><a href="profile.html">My Profile</a></div>
+                </div>
+            </div>
+        </aside>
+
+        <header>
+            <button class="sidebar-toggle" id="sidebarToggle"><span></span><span></span><span></span></button>
+            <h4>Dashboard</h4>
+            <div class="header-right">
+                <button onclick="openModal()">+ Submit Feedback</button>
+            </div>
+        </header>
+
+        <main>
+            <div class="kpi-row">
+                <div class="kpi">
+                    <div class="kpi-label">Feedback submitted</div>
+                    <div class="kpi-val">8</div>
+                    <div class="kpi-sub">This quarter</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi-label">Avg. rating given</div>
+                    <div class="kpi-val">4.2</div>
+                    <div class="kpi-sub">Out of 5</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi-label">Surveys pending</div>
+                    <div class="kpi-val">1</div>
+                    <div class="kpi-sub">Due soon</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi-label">Recognition pts</div>
+                    <div class="kpi-val">240</div>
+                    <div class="kpi-sub">This month</div>
+                </div>
+            </div>
+
+            <div class="dash-card">
+                <div class="section-title">Recent from manager</div>
+                <div style="display:flex;align-items:flex-start;gap:12px;">
+                    <div class="av-sm">KL</div>
+                    <div>
+                        <div style="font-size:14px;font-weight:500;color:#0d3462;">Khayle Lanon</div>
+                        <div style="font-size:13px;color:#0d346280;margin-top:4px;line-height:1.6;">Super galing mo
+                            naman!!</div>
+                        <div style="font-size:11px;color:#0d346260;margin-top:6px;">2d ago · Innovate Co. Engineering
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="two-col">
+                <div class="dash-card" style="margin-bottom:0;">
+                    <div class="section-title">Pending survey</div>
+                    <div style="font-size:13px;color:#0d346280;margin-bottom:8px;line-height:1.5;">Q1 Employee Pulse —
+                        closes April 30</div>
+                    <div class="prog-bg">
+                        <div class="prog-fill" style="width:0%"></div>
+                    </div>
+                    <div style="font-size:11px;color:#0d346260;margin-top:4px;margin-bottom:6px;">Not started yet</div>
+                    <button class="btn-sm" onclick="window.location='surveys.html'">Take survey</button>
+                </div>
+                <div class="dash-card" style="margin-bottom:0;">
+                    <div class="section-title">Latest announcement</div>
+                    <div style="font-size:13px;font-weight:500;color:#0d3462;margin-bottom:5px;">Q2 All-Hands — April
+                        10, 2pm</div>
+                    <div style="font-size:13px;color:#0d346280;line-height:1.5;">Video link shared 24h prior. Leadership
+                        Q&A included.</div>
+                    <div style="font-size:11px;color:#0d346260;margin-top:8px;">1d ago · High priority</div>
+                </div>
+            </div>
+        </main>
+    </section>
+
+    <!-- FEEDBACK MODAL -->
+    <div class="modal-backdrop" id="modal" style="display:none;">
+        <div class="modal">
+            <div class="modal-title">Submit feedback</div>
+            <div>
+                <div class="modal-label">To</div>
+                <select class="modal-input">
+                    <option>Manager (Khayle Lanon)</option>
+                    <option>Team (Engineering)</option>
+                    <option>HR / Anonymous</option>
+                </select>
+            </div>
+            <div>
+                <div class="modal-label">Category</div>
+                <select class="modal-input">
+                    <option>Management</option>
+                    <option>Communication</option>
+                    <option>Workload</option>
+                    <option>Culture</option>
+                    <option>Tools & Processes</option>
+                </select>
+            </div>
+            <div>
+                <div class="modal-label">Rating</div>
+                <div class="stars-input" id="star-row">
+                    <span class="star-btn lit" data-v="1">★</span>
+                    <span class="star-btn lit" data-v="2">★</span>
+                    <span class="star-btn lit" data-v="3">★</span>
+                    <span class="star-btn lit" data-v="4">★</span>
+                    <span class="star-btn" data-v="5">★</span>
+                </div>
+            </div>
+            <div>
+                <div class="modal-label">Your feedback</div>
+                <textarea class="modal-textarea" placeholder="Be specific and constructive…"></textarea>
+            </div>
+            <div class="modal-check">
+                <input type="checkbox" id="anon-check">
+                <label for="anon-check">Submit anonymously</label>
+            </div>
+            <div class="modal-btns">
+                <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+                <button class="modal-submit" onclick="closeModal()">Submit feedback</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const toggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        function openSidebar() { sidebar.classList.add('open'); overlay.classList.add('active'); toggle.classList.add('open'); document.body.style.overflow = 'hidden'; }
+        function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('active'); toggle.classList.remove('open'); document.body.style.overflow = ''; }
+        toggle.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
+        overlay.addEventListener('click', closeSidebar);
+
+        function openModal() { document.getElementById('modal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
+        document.getElementById('star-row').addEventListener('click', function (e) {
+            const v = +e.target.dataset.v;
+            if (!v) return;
+            document.querySelectorAll('.star-btn').forEach(s => s.classList.toggle('lit', +s.dataset.v <= v));
+        });
+    </script>
+</body>
+
+</html>

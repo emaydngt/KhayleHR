@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KhayleHR – Create Team</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700');
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Ubuntu', sans-serif; }
+        body { min-height: 100vh; background-color: ghostwhite; }
+
+        .container1 {
+            display: grid; grid-template-columns: 220px 1fr;
+            grid-template-rows: 63px 1fr; height: 100vh; overflow: hidden;
+        }
+        .container1 aside {
+            background-color: #789ecb; grid-column: 1/2; grid-row: 1/3;
+            display: grid; grid-template-rows: 63px 1fr; z-index: 50; transition: transform 0.3s ease;
+        }
+        .container1 aside > div:first-child { border-bottom: #6383a9 1px solid; border-right: #6383a9 1px solid; display: flex; align-items: center; }
+        .container1 aside > div:last-child { border-right: #6383a9 1px solid; overflow-y: auto; padding-bottom: 20px; }
+        .container1 aside div > h6 { font-size: 20px; color: white; padding-left: 14px; height: 100%; display: flex; align-items: center; }
+        .container1 aside div > h3 { color: #00000055; font-size: 12px; padding: 12px 0 0 12px; text-transform: uppercase; letter-spacing: 0.06em; }
+        .container1 aside div > div { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+        .container1 aside div > div > a {
+            padding: 10px 12px; background-color: #6383a9; border-radius: 10px;
+            width: 90%; margin: auto; color: white; text-decoration: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.25); transition: background 0.15s; display: block; font-size: 14px;
+        }
+        .container1 aside div > div > a:hover { background-color: #0d356260; }
+
+        .container1 header {
+            background-color: #789ecb; grid-column: 2/3; border-bottom: #6383a9 1px solid;
+            display: flex; justify-content: space-between; align-items: center; padding: 0 20px;
+        }
+        .container1 header h4 { font-size: 22px; color: #0d3462; }
+        .container1 header .header-actions { display: flex; gap: 10px; align-items: center; }
+        .container1 header .header-actions button {
+            padding: 7px 20px; background-color: #0d3462; font-size: 0.9rem;
+            border-radius: 10px; color: white; border: none; cursor: pointer;
+            transition: background 0.1s; box-shadow: 0 4px 10px rgba(0,0,0,0.3); white-space: nowrap;
+        }
+        .container1 header .header-actions button:hover { background-color: #071d36; }
+        .container1 main {
+            background-color: #fff; grid-column: 2/3;
+            padding: clamp(16px,2.5vw,30px) clamp(16px,2.5vw,40px); overflow-y: auto;
+        }
+        .container1 main::-webkit-scrollbar { display: none; }
+
+        .sidebar-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
+        .sidebar-toggle span { display: block; width: 22px; height: 3px; background: white; border-radius: 3px; transition: all 0.3s; }
+        .sidebar-toggle.open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+        .sidebar-toggle.open span:nth-child(2) { opacity: 0; }
+        .sidebar-toggle.open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 40; opacity: 0; transition: opacity 0.3s; }
+        .sidebar-overlay.active { display: block; opacity: 1; }
+
+        /* ── Preview ── */
+        .preview-card {
+            background-color: #c9d0e3; border-radius: 10px;
+            padding: clamp(14px,2vw,20px) clamp(16px,2.5vw,28px);
+            margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+        }
+        .org-av { width: 50px; height: 50px; border-radius: 12px; background-color: #0d3462; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: white; flex-shrink: 0; }
+        .org-name { font-size: 16px; font-weight: 500; color: #0d3462; }
+        .org-meta { font-size: 13px; color: #0d346268; margin-top: 3px; }
+        .dept-chips { margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+        .dept-chip { background-color: #6383a9; color: white; font-size: 11px; padding: 3px 10px; border-radius: 99px; font-weight: 500; }
+
+        /* ── Form cards ── */
+        .form-card {
+            background-color: #c9d0e3; border-radius: 10px;
+            padding: clamp(16px,2.5vw,24px) clamp(16px,2.5vw,28px);
+            margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+        .form-card h6 { font-size: 16px; font-weight: 500; color: #0d3462; margin-bottom: 4px; }
+        .form-card > p { font-size: 13px; color: #0d346268; margin-bottom: 18px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+        .form-group:last-child { margin-bottom: 0; }
+        .form-label { font-size: 11px; font-weight: 500; color: #0d346270; text-transform: uppercase; letter-spacing: 0.05em; }
+        .form-input {
+            width: 100%; height: 42px; background-color: #6383a9; border: none;
+            border-radius: 10px; padding: 0 14px; font-size: 14px; color: white;
+            font-family: 'Ubuntu',sans-serif; outline: none; transition: opacity 0.15s;
+        }
+        .form-input::placeholder { color: rgba(255,255,255,0.55); }
+        .form-input:focus { opacity: 0.9; }
+        .form-select {
+            width: 100%; height: 42px; background-color: #6383a9; border: none;
+            border-radius: 10px; padding: 0 14px; font-size: 14px; color: white;
+            font-family: 'Ubuntu',sans-serif; outline: none; cursor: pointer;
+        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+        /* Departments */
+        .dept-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+        .dept-row { display: flex; align-items: center; gap: 10px; }
+        .dept-row .form-input { flex: 1; }
+        .dept-remove {
+            width: 34px; height: 34px; border-radius: 8px; background: #789ecb;
+            border: none; color: white; font-size: 18px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .dept-remove:hover { background: #0d3462; }
+        .btn-add-dept {
+            background: none; border: none; color: #6383a9; font-size: 13px;
+            font-family: 'Ubuntu',sans-serif; cursor: pointer; padding: 0; transition: color 0.15s;
+        }
+        .btn-add-dept:hover { color: #0d3462; }
+
+        /* Submit */
+        .submit-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: flex-end; padding-bottom: 10px; }
+        .btn-save {
+            padding: 10px 24px; background-color: #0d3462; color: white;
+            border: none; border-radius: 10px; font-size: 15px;
+            font-family: 'Ubuntu',sans-serif; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .btn-save:hover { background: #071d36; }
+        .btn-skip {
+            padding: 10px 24px; background-color: #c9d0e3; color: #0d3462;
+            border: none; border-radius: 10px; font-size: 15px;
+            font-family: 'Ubuntu',sans-serif; cursor: pointer;
+        }
+        .btn-skip:hover { background: #b8c0d6; }
+
+        @media (max-width: 1024px) { .container1 { grid-template-columns: 185px 1fr; } }
+        @media (max-width: 768px) {
+            .container1 { grid-template-columns: 1fr; }
+            .container1 aside { position: fixed; top: 0; left: -240px; width: 230px; height: 100vh; grid-row: unset; }
+            .container1 aside.open { transform: translateX(240px); }
+            .container1 header, .container1 main { grid-column: 1; }
+            .sidebar-toggle { display: flex; }
+            .form-row { grid-template-columns: 1fr; }
+            .dept-chips { margin-left: 0; width: 100%; justify-content: flex-start; }
+        }
+        @media (max-width: 480px) {
+            .preview-card { flex-direction: column; align-items: flex-start; }
+            .submit-row { flex-direction: column-reverse; }
+            .btn-save, .btn-skip { width: 100%; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+<div class="sidebar-overlay" id="overlay"></div>
+<section class="container1">
+    <aside id="sidebar">
+        <div><h6>Khayle<span style="color:#0d3462;">HR</span></h6></div>
+        <div>
+            <div>
+                <h3>Getting Started</h3>
+                <div>
+                    <a href="welcome.html">Welcome</a>
+                    <a href="Invitation.html">Invitation</a>
+                    <a href="createteam.html" style="background-color:#0d3462;">Create Team</a>
+                </div>
+            </div>
+            <div>
+                <h3>Account</h3>
+                <div><a href="profile.html">My profile</a></div>
+            </div>
+        </div>
+    </aside>
+
+    <header>
+        <button class="sidebar-toggle" id="sidebarToggle"><span></span><span></span><span></span></button>
+        <h4>Create Team</h4>
+        <div class="header-actions">
+            <button onclick="saveAndContinue()">Save &amp; Continue →</button>
+        </div>
+    </header>
+
+    <main>
+        <!-- Live preview -->
+        <div class="preview-card" id="preview-card">
+            <div class="org-av" id="prev-av">?</div>
+            <div>
+                <div class="org-name" id="prev-name">Your organization name</div>
+                <div class="org-meta" id="prev-meta">Industry · Size</div>
+            </div>
+            <div class="dept-chips" id="prev-chips"></div>
+        </div>
+
+        <!-- Org info -->
+        <div class="form-card">
+            <h6>Organization details</h6>
+            <p>This is how your company will appear to your team members.</p>
+            <div class="form-row">
+                <div class="form-group">
+                    <div class="form-label">Organization name</div>
+                    <input class="form-input" id="org-name" type="text" placeholder="e.g. Innovate Co." oninput="updatePreview()" />
+                </div>
+                <div class="form-group">
+                    <div class="form-label">Industry</div>
+                    <select class="form-select" id="org-industry" onchange="updatePreview()">
+                        <option value="" disabled selected>Select industry</option>
+                        <option>Technology</option>
+                        <option>Healthcare</option>
+                        <option>Finance</option>
+                        <option>Education</option>
+                        <option>Retail</option>
+                        <option>Manufacturing</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <div class="form-label">Company size</div>
+                    <select class="form-select" id="org-size" onchange="updatePreview()">
+                        <option value="" disabled selected>Select size</option>
+                        <option>1–10</option><option>11–50</option>
+                        <option>51–200</option><option>201–500</option><option>500+</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">Your role</div>
+                    <select class="form-select">
+                        <option>HR Manager</option>
+                        <option>Department Manager</option>
+                        <option>Team Lead</option>
+                        <option>CEO / Founder</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Departments -->
+        <div class="form-card">
+            <h6>Departments</h6>
+            <p>Add the departments in your organization. You can always add more later.</p>
+            <div class="dept-list" id="dept-list">
+                <div class="dept-row">
+                    <input class="form-input" type="text" placeholder="e.g. Engineering" oninput="updateChips()" />
+                    <button class="dept-remove" onclick="removeDept(this)">×</button>
+                </div>
+                <div class="dept-row">
+                    <input class="form-input" type="text" placeholder="e.g. Product" oninput="updateChips()" />
+                    <button class="dept-remove" onclick="removeDept(this)">×</button>
+                </div>
+                <div class="dept-row">
+                    <input class="form-input" type="text" placeholder="e.g. Design" oninput="updateChips()" />
+                    <button class="dept-remove" onclick="removeDept(this)">×</button>
+                </div>
+            </div>
+            <button class="btn-add-dept" onclick="addDept()">+ Add department</button>
+        </div>
+
+        <!-- Actions -->
+        <div class="submit-row">
+            <button class="btn-skip" onclick="window.location='dashboard.html'">Skip for now</button>
+            <button class="btn-save" onclick="saveAndContinue()">Save &amp; go to dashboard →</button>
+        </div>
+    </main>
+</section>
+
+<script>
+    const toggle = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    function openSidebar()  { sidebar.classList.add('open'); overlay.classList.add('active'); toggle.classList.add('open'); document.body.style.overflow='hidden'; }
+    function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('active'); toggle.classList.remove('open'); document.body.style.overflow=''; }
+    toggle.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
+    overlay.addEventListener('click', closeSidebar);
+
+    function updatePreview() {
+        const name = document.getElementById('org-name').value.trim();
+        const industry = document.getElementById('org-industry').value;
+        const size = document.getElementById('org-size').value;
+        document.getElementById('prev-av').textContent  = name ? name.slice(0,2).toUpperCase() : '?';
+        document.getElementById('prev-name').textContent = name || 'Your organization name';
+        document.getElementById('prev-meta').textContent = [industry, size ? size+' employees':''].filter(Boolean).join(' · ') || 'Industry · Size';
+    }
+    function updateChips() {
+        const chips = document.getElementById('prev-chips');
+        chips.innerHTML = '';
+        document.querySelectorAll('#dept-list .form-input').forEach(inp => {
+            const val = inp.value.trim();
+            if (val) { const c = document.createElement('span'); c.className='dept-chip'; c.textContent=val; chips.appendChild(c); }
+        });
+    }
+    function addDept() {
+        const list = document.getElementById('dept-list');
+        const row = document.createElement('div');
+        row.className = 'dept-row';
+        row.innerHTML = `<input class="form-input" type="text" placeholder="Department name" oninput="updateChips()" /><button class="dept-remove" onclick="removeDept(this)">×</button>`;
+        list.appendChild(row);
+        row.querySelector('input').focus();
+    }
+    function removeDept(btn) { btn.closest('.dept-row').remove(); updateChips(); }
+    function saveAndContinue() { window.location = 'dashboard.html'; }
+</script>
+</body>
+</html>

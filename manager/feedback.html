@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KhayleHR – Feedback</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700');
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Ubuntu', sans-serif; }
+        body { min-height: 100vh; background-color: ghostwhite; }
+
+        .container1 { display: grid; grid-template-columns: 220px 1fr; grid-template-rows: 63px 1fr; height: 100vh; overflow: hidden; }
+        .container1 aside { background-color: #789ecb; grid-column: 1/2; grid-row: 1/3; display: grid; grid-template-rows: 63px 1fr; z-index: 50; transition: transform 0.3s ease; }
+        .container1 aside > div:first-child { border-bottom: #6383a9 1px solid; border-right: #6383a9 1px solid; display: flex; align-items: center; }
+        .container1 aside > div:last-child { border-right: #6383a9 1px solid; overflow-y: auto; padding-bottom: 20px; }
+        .container1 aside div > h6 { font-size: 20px; color: white; padding-left: 14px; height: 100%; display: flex; align-items: center; }
+        .container1 aside div > h3 { color: #00000055; font-size: 12px; padding: 12px 0 0 12px; text-transform: uppercase; letter-spacing: 0.06em; }
+        .container1 aside div > div { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+        .container1 aside div > div > a { padding: 10px 12px; background-color: #6383a9; border-radius: 10px; width: 90%; margin: auto; color: white; text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.25); transition: background 0.15s; display: block; font-size: 14px; }
+        .container1 aside div > div > a:hover { background-color: #0d356260; }
+        .container1 header { background-color: #789ecb; grid-column: 2/3; border-bottom: #6383a9 1px solid; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; gap: 10px; }
+        .container1 header h4 { font-size: 22px; color: #0d3462; }
+        .container1 main { background-color: #fff; grid-column: 2/3; overflow-y: auto; display: flex; flex-direction: column; }
+        .container1 main::-webkit-scrollbar { display: none; }
+
+        .sidebar-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
+        .sidebar-toggle span { display: block; width: 22px; height: 3px; background: white; border-radius: 3px; transition: all 0.3s; }
+        .sidebar-toggle.open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+        .sidebar-toggle.open span:nth-child(2) { opacity: 0; }
+        .sidebar-toggle.open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 40; opacity: 0; transition: opacity 0.3s; }
+        .sidebar-overlay.active { display: block; opacity: 1; }
+
+        /* Filter bar */
+        .filterbar { display: flex; align-items: center; padding: 0 16px; height: 56px; gap: 8px; flex-wrap: wrap; border-bottom: 1px solid #f0f0f0; flex-shrink: 0; }
+        .filter-tab { background-color: #c9d0e3; color: #0d3462; height: 34px; padding: 0 16px; border-radius: 10px; font-size: 14px; border: none; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
+        .filter-tab.active { background: #0d3462; color: white; }
+        .search-input { background-color: #c9d0e3; height: 34px; border-radius: 10px; padding: 0 12px; font-size: 14px; color: #0d3462; border: none; outline: none; min-width: 0; width: clamp(100px,25%,200px); margin-left: auto; }
+
+        /* Feedback list */
+        .fb-list { display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; }
+        .fb-card { background: #c9d0e3; border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+        .fbheader { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+        .fbleft { display: flex; align-items: center; gap: 10px; }
+        .av-sm { width: 38px; height: 38px; border-radius: 50%; background: #0d3462; color: white; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; flex-shrink: 0; }
+        .fbname { font-size: 14px; font-weight: 500; color: #0d3462; }
+        .fbdept { font-size: 12px; color: #0d346260; }
+        .fbmeta { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .stars { color: #0d3462; font-size: 14px; }
+        .fb-time { font-size: 12px; color: #0d346260; }
+        .fbtext { font-size: 13px; color: white; background: #0d3462; padding: 10px 12px; border-radius: 8px; line-height: 1.55; }
+        .fbfooter { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .tag { padding: 4px 10px; border-radius: 10px; font-size: 12px; color: white; background: #789ecb; }
+        .status-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+        .dot-open { background: #0d3462; }
+        .dot-resolved { background: #6c757d; }
+        .status-text { font-size: 12px; color: #0d346260; }
+        .fbbtn { margin-left: auto; padding: 5px 16px; background: #0d3462; color: white; border: none; border-radius: 8px; font-size: 12px; cursor: pointer; font-family: 'Ubuntu',sans-serif; }
+        .fbbtn:hover { background: #071d36; }
+
+        @media (max-width: 1024px) { .container1 { grid-template-columns: 185px 1fr; } }
+        @media (max-width: 768px) {
+            .container1 { grid-template-columns: 1fr; }
+            .container1 aside { position: fixed; top: 0; left: -240px; width: 230px; height: 100vh; grid-row: unset; }
+            .container1 aside.open { transform: translateX(240px); }
+            .container1 header, .container1 main { grid-column: 1; }
+            .sidebar-toggle { display: flex; }
+            .search-input { margin-left: 0; width: 100%; }
+            .filterbar { height: auto; padding: 10px 16px; }
+        }
+        @media (max-width: 480px) { .fbheader { flex-direction: column; align-items: flex-start; } }
+    </style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="overlay"></div>
+
+<section class="container1">
+    <aside id="sidebar">
+        <div><h6>Khayle<span style="color:#0d3462;">HR</span></h6></div>
+        <div>
+            <div>
+                <h3>Overview</h3>
+                <div>
+                    <a href="dashboard.html">Dashboard</a>
+                    <a href="feedback.html" style="background-color:#0d3462;">Feedback</a>
+                    <a href="announcements.html">Announcements</a>
+                </div>
+            </div>
+            <div>
+                <h3>Tools</h3>
+                <div>
+                    <a href="surveys.html">Surveys</a>
+                    <a href="reports.html">Reports</a>
+                    <a href="team-directory.html">Team Directory</a>
+                </div>
+            </div>
+            <div>
+                <h3>Account</h3>
+                <div><a href="profile.html">My Profile</a></div>
+            </div>
+        </div>
+    </aside>
+
+    <header>
+        <button class="sidebar-toggle" id="sidebarToggle"><span></span><span></span><span></span></button>
+        <h4>Feedback</h4>
+        <div style="width:30px;"></div>
+    </header>
+
+    <main>
+        <div class="filterbar">
+            <button class="filter-tab active" onclick="setTab(this)">All</button>
+            <button class="filter-tab" onclick="setTab(this)">Open</button>
+            <button class="filter-tab" onclick="setTab(this)">Pending</button>
+            <button class="filter-tab" onclick="setTab(this)">Resolved</button>
+            <input class="search-input" type="text" placeholder="Search…" />
+        </div>
+        <div class="fb-list">
+            <div class="fb-card">
+                <div class="fbheader">
+                    <div class="fbleft">
+                        <div class="av-sm">ED</div>
+                        <div>
+                            <div class="fbname">Emay Dangate</div>
+                            <div class="fbdept">Programmer · Yearner</div>
+                        </div>
+                    </div>
+                    <div class="fbmeta"><span class="stars">★★★★★</span><span class="fb-time">2h ago</span></div>
+                </div>
+                <div class="fbtext">Hi baby nag kaon kana sorry gid ha kay saba gi ba sila ba imissu mwuah!</div>
+                <div class="fbfooter">
+                    <span class="tag">Onboarding</span>
+                    <div class="status-dot dot-open"></div><span class="status-text">Open</span>
+                    <button class="fbbtn">Reply</button>
+                </div>
+            </div>
+            <div class="fb-card">
+                <div class="fbheader">
+                    <div class="fbleft">
+                        <div class="av-sm">JC</div>
+                        <div>
+                            <div class="fbname">JC Ruadap</div>
+                            <div class="fbdept">Product</div>
+                        </div>
+                    </div>
+                    <div class="fbmeta"><span class="stars">★★★</span><span class="fb-time">5h ago</span></div>
+                </div>
+                <div class="fbtext">Huyy nalulugi na negosyo natin</div>
+                <div class="fbfooter">
+                    <span class="tag">Resource</span>
+                    <div class="status-dot dot-open"></div><span class="status-text">Pending</span>
+                    <button class="fbbtn">Reply</button>
+                </div>
+            </div>
+            <div class="fb-card">
+                <div class="fbheader">
+                    <div class="fbleft">
+                        <div class="av-sm">MG</div>
+                        <div>
+                            <div class="fbname">Mariel Gestiada</div>
+                            <div class="fbdept">Design · Lead</div>
+                        </div>
+                    </div>
+                    <div class="fbmeta"><span class="stars">★★★★</span><span class="fb-time">1d ago</span></div>
+                </div>
+                <div class="fbtext">Design resources are constantly being deprioritized when there's a sprint crunch. Would like visibility into sprint planning earlier.</div>
+                <div class="fbfooter">
+                    <span class="tag">Communication</span>
+                    <div class="status-dot dot-open"></div><span class="status-text">Open</span>
+                    <button class="fbbtn">Reply</button>
+                </div>
+            </div>
+            <div class="fb-card">
+                <div class="fbheader">
+                    <div class="fbleft">
+                        <div class="av-sm">AP</div>
+                        <div>
+                            <div class="fbname">Anne Padua</div>
+                            <div class="fbdept">Operations</div>
+                        </div>
+                    </div>
+                    <div class="fbmeta"><span class="stars">★★★★★</span><span class="fb-time">2h ago</span></div>
+                </div>
+                <div class="fbtext">Team leads are responsive but escalation paths for urgent blockers are unclear. Needs a documented process.</div>
+                <div class="fbfooter">
+                    <span class="tag">Management</span>
+                    <div class="status-dot dot-open"></div><span class="status-text">Open</span>
+                    <button class="fbbtn">Reply</button>
+                </div>
+            </div>
+        </div>
+    </main>
+</section>
+
+<script>
+    const toggle = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    function openSidebar()  { sidebar.classList.add('open'); overlay.classList.add('active'); toggle.classList.add('open'); document.body.style.overflow='hidden'; }
+    function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('active'); toggle.classList.remove('open'); document.body.style.overflow=''; }
+    toggle.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
+    overlay.addEventListener('click', closeSidebar);
+    function setTab(el) { el.closest('div').querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
+</script>
+</body>
+</html>

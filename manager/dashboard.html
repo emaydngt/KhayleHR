@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KhayleHR – Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700');
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Ubuntu', sans-serif; }
+        body { min-height: 100vh; background-color: ghostwhite; }
+
+        /* ── LAYOUT ── */
+        .container1 { display: grid; grid-template-columns: 220px 1fr; grid-template-rows: 63px 1fr; height: 100vh; overflow: hidden; }
+        .container1 aside { background-color: #789ecb; grid-column: 1/2; grid-row: 1/3; display: grid; grid-template-rows: 63px 1fr; z-index: 50; transition: transform 0.3s ease; }
+        .container1 aside > div:first-child { border-bottom: #6383a9 1px solid; border-right: #6383a9 1px solid; display: flex; align-items: center; }
+        .container1 aside > div:last-child { border-right: #6383a9 1px solid; overflow-y: auto; padding-bottom: 20px; }
+        .container1 aside div > h6 { font-size: 20px; color: white; padding-left: 14px; height: 100%; display: flex; align-items: center; }
+        .container1 aside div > h3 { color: #00000055; font-size: 12px; padding: 12px 0 0 12px; text-transform: uppercase; letter-spacing: 0.06em; }
+        .container1 aside div > div { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+        .container1 aside div > div > a { padding: 10px 12px; background-color: #6383a9; border-radius: 10px; width: 90%; margin: auto; color: white; text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.25); transition: background 0.15s; display: block; font-size: 14px; }
+        .container1 aside div > div > a:hover { background-color: #0d356260; }
+        .container1 header { background-color: #789ecb; grid-column: 2/3; border-bottom: #6383a9 1px solid; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; gap: 10px; }
+        .container1 header h4 { font-size: 22px; color: #0d3462; white-space: nowrap; }
+        .header-actions { display: flex; gap: 10px; flex-shrink: 0; }
+        .header-actions button { padding: 7px 16px; background-color: #0d3462; font-size: 0.88rem; border-radius: 10px; color: white; border: none; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); white-space: nowrap; transition: background 0.15s; }
+        .header-actions button:hover { background: #071d36; }
+        .container1 main { background-color: ghostwhite; grid-column: 2/3; padding: clamp(12px,2vw,20px) clamp(10px,1.5vw,14px); overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
+        .container1 main::-webkit-scrollbar { display: none; }
+
+        /* hamburger */
+        .sidebar-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; flex-shrink: 0; }
+        .sidebar-toggle span { display: block; width: 22px; height: 3px; background: white; border-radius: 3px; transition: all 0.3s; }
+        .sidebar-toggle.open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+        .sidebar-toggle.open span:nth-child(2) { opacity: 0; }
+        .sidebar-toggle.open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 40; opacity: 0; transition: opacity 0.3s; }
+        .sidebar-overlay.active { display: block; opacity: 1; }
+
+        /* ── KPI ROW ── */
+        .kpi-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+        .kpi { background: #6383a9; border-radius: 10px; padding: 16px; box-shadow: 0 4px 4px rgba(0,0,0,0.15); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+        .kpi h3 { font-size: 13px; color: #0d3462; text-align: center; }
+        .kpi h2 { font-size: 30px; color: white; }
+        .kpi small { font-size: 12px; color: white; }
+
+        /* ── BOTTOM GRID ── */
+        .bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+        /* ── CARDS ── */
+        .dash-card { background: #c9d0e3; border-radius: 10px; box-shadow: 0 4px 4px rgba(0,0,0,0.1); overflow: hidden; }
+        .card-inner { background: #6383a9; border-radius: 8px; padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; }
+        .card-title { font-size: 16px; font-weight: 500; color: #0d3462; padding: 12px 16px 8px; }
+        .fb-item { padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        .fb-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .fb-item p { font-size: 13px; color: white; line-height: 1.5; }
+        .fb-item small { font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 3px; display: block; }
+        .ann-item { padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        .ann-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .ann-item p { font-size: 13px; color: white; font-weight: 500; }
+        .ann-item small { font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 2px; display: block; }
+        .dept-item { display: flex; justify-content: space-between; align-items: center; }
+        .dept-item p { font-size: 13px; color: white; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 1100px) { .kpi-row { grid-template-columns: repeat(2,1fr); } }
+        @media (max-width: 1024px) { .container1 { grid-template-columns: 185px 1fr; } }
+        @media (max-width: 900px)  { .bottom-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) {
+            .container1 { grid-template-columns: 1fr; }
+            .container1 aside { position: fixed; top: 0; left: -240px; width: 230px; height: 100vh; grid-row: unset; }
+            .container1 aside.open { transform: translateX(240px); }
+            .container1 header, .container1 main { grid-column: 1; }
+            .sidebar-toggle { display: flex; }
+            .header-actions button:not(:first-child) { display: none; }
+        }
+        @media (max-width: 480px) {
+            .kpi-row { grid-template-columns: repeat(2,1fr); }
+            .header-actions { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="overlay"></div>
+
+<section class="container1">
+    <aside id="sidebar">
+        <div><h6>Khayle<span style="color:#0d3462;">HR</span></h6></div>
+        <div>
+            <div>
+                <h3>Overview</h3>
+                <div>
+                    <a href="dashboard.html" style="background-color:#0d3462;">Dashboard</a>
+                    <a href="feedback.html">Feedback</a>
+                    <a href="announcements.html">Announcements</a>
+                </div>
+            </div>
+            <div>
+                <h3>Tools</h3>
+                <div>
+                    <a href="surveys.html">Surveys</a>
+                    <a href="reports.html">Reports</a>
+                    <a href="team-directory.html">Team Directory</a>
+                </div>
+            </div>
+            <div>
+                <h3>Account</h3>
+                <div><a href="profile.html">My Profile</a></div>
+            </div>
+        </div>
+    </aside>
+
+    <header>
+        <button class="sidebar-toggle" id="sidebarToggle"><span></span><span></span><span></span></button>
+        <h4>Dashboard</h4>
+        <div class="header-actions">
+            <button>Export</button>
+            <button>+ New Survey</button>
+        </div>
+    </header>
+
+    <main>
+        <!-- KPI Row -->
+        <div class="kpi-row">
+            <div class="kpi">
+                <h3>Feedback Score</h3>
+                <h2>4.2</h2>
+                <small>↑ 0.3 this month</small>
+            </div>
+            <div class="kpi">
+                <h3>Responses</h3>
+                <h2>184</h2>
+                <small>↑ 22 new</small>
+            </div>
+            <div class="kpi">
+                <h3>Open Issues</h3>
+                <h2>7</h2>
+                <small>↑ 2 escalated</small>
+            </div>
+            <div class="kpi">
+                <h3>Survey Completion</h3>
+                <h2>78%</h2>
+                <small>↑ 5% vs last</small>
+            </div>
+        </div>
+
+        <!-- Bottom Grid -->
+        <div class="bottom-grid">
+            <!-- Recent Feedback -->
+            <div class="dash-card">
+                <div class="card-title">Recent Feedback</div>
+                <div class="card-inner" style="margin: 0 12px 12px;">
+                    <div class="fb-item">
+                        <p><strong>Emay Dangate (★★★★★)</strong> — 2h ago</p>
+                        <p>Hi baby nag kaon kana sorry gid ha kay saba gi ba sila ba imissu mwuah!</p>
+                        <small>Onboarding</small>
+                    </div>
+                    <div class="fb-item">
+                        <p><strong>JC Ruadap (★★★☆☆)</strong> — 5h ago</p>
+                        <p>Huyy nalulugi na negosyo natin</p>
+                        <small>Resource</small>
+                    </div>
+                    <div class="fb-item">
+                        <p><strong>Mariel Gestiada (★★★★☆)</strong> — 1d ago</p>
+                        <p>Design resources are constantly being deprioritized when there's a sprint crunch.</p>
+                        <small>Communication</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right column: Announcements + Sentiment -->
+            <div style="display:flex;flex-direction:column;gap:14px;">
+                <div class="dash-card">
+                    <div class="card-title">Announcements</div>
+                    <div class="card-inner" style="margin: 0 12px 12px;">
+                        <div class="ann-item">
+                            <p>Q2 All-Hands Meeting — April 10</p>
+                            <small>Posted by CEO · 1d ago · 142 views</small>
+                        </div>
+                        <div class="ann-item">
+                            <p>New flexible work policy effective May 1</p>
+                            <small>Posted by HR · 3d ago · 98 views</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="dash-card">
+                    <div class="card-title">Sentiment by Department</div>
+                    <div class="card-inner" style="margin: 0 12px 12px;">
+                        <div class="dept-item"><p>Engineering</p><p><strong>88%</strong></p></div>
+                        <div class="dept-item"><p>Product</p><p><strong>74%</strong></p></div>
+                        <div class="dept-item"><p>Design</p><p><strong>91%</strong></p></div>
+                        <div class="dept-item"><p>Operations</p><p><strong>62%</strong></p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</section>
+
+<script>
+    const toggle = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    function openSidebar()  { sidebar.classList.add('open'); overlay.classList.add('active'); toggle.classList.add('open'); document.body.style.overflow='hidden'; }
+    function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('active'); toggle.classList.remove('open'); document.body.style.overflow=''; }
+    toggle.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
+    overlay.addEventListener('click', closeSidebar);
+</script>
+</body>
+</html>

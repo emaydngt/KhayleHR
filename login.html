@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KhayleHR – Login</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Ubuntu', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: ghostwhite;
+            overflow-x: hidden;
+        }
+
+        /* ── NAV ── */
+        header {
+            background-color: #789ecb;
+            height: 63px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 1.9rem;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .logo-text span {
+            color: #0d3462;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #0d3462;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1.3rem;
+        }
+
+        .nav-right a {
+            text-decoration: none;
+            padding: 8px 18px;
+            border-radius: 5px;
+            font-weight: 500;
+            transition: all 0.2s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-login {
+            background: white;
+            color: #0d3462;
+        }
+
+        .btn-login:hover {
+            background: #071d36;
+            color: white;
+            transform: scale(0.95);
+        }
+
+        .btn-signup {
+            background: #0d3462;
+            color: white;
+        }
+
+        .btn-signup:hover {
+            background: #071d36;
+            transform: scale(0.95);
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 4px;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: white;
+            border-radius: 3px;
+            transition: all 0.3s;
+        }
+
+        .hamburger.open span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+
+        .hamburger.open span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.open span:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 200;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .side-menu {
+            position: fixed;
+            top: 0;
+            right: -280px;
+            width: 260px;
+            height: 100vh;
+            background: #6383a9;
+            z-index: 300;
+            padding: 80px 30px 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: right 0.3s ease;
+        }
+
+        .side-menu.open {
+            right: 0;
+        }
+
+        .side-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            transition: color 0.2s;
+        }
+
+        .side-menu a:hover {
+            color: #789ecb;
+        }
+
+        .side-menu .side-auth {
+            margin-top: 20px;
+            width: 90%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border-bottom: none;
+            padding: 0;
+        }
+
+        .side-menu .side-auth a {
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            border-bottom: none;
+        }
+
+        .side-menu .side-auth .btn-login {
+            background: white;
+            color: #0d3462;
+        }
+
+        .side-menu .side-auth .btn-signup {
+            background: #789ecb;
+            color: white;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+        }
+
+        /* ── FORM ── */
+        .form-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 63px);
+            padding: 2rem 1.2rem;
+            animation: fadeUp 0.5s 0.3s ease both;
+        }
+
+        .form-card {
+            background: #789ecb;
+            padding: clamp(28px, 5vw, 44px) clamp(24px, 5vw, 40px);
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .form-card h2 {
+            color: white;
+            font-size: 1.6rem;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .field label {
+            color: white;
+            font-size: 0.95rem;
+        }
+
+        .field input {
+            padding: 11px 14px;
+            border-radius: 7px;
+            border: 1.5px solid #0d3462;
+            font-size: 1rem;
+            width: 100%;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .field input:focus {
+            border-color: white;
+        }
+
+        .form-card button {
+            padding: 12px;
+            border-radius: 7px;
+            border: none;
+            background: #0d3462;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.15s;
+            letter-spacing: 0.5px;
+        }
+
+        .form-card button:hover {
+            background: #071d36;
+            transform: translateY(-2px);
+        }
+
+        .form-footer {
+            text-align: center;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .form-footer a {
+            color: #0d3462;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+
+            .nav-links,
+            .nav-right {
+                display: none;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            nav {
+                padding: 0 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <nav>
+            <div class="nav-left">
+                <span class="logo-text">Khayle<span>HR</span></span>
+                <div class="nav-links">
+                    <a href="home.html">Home</a>
+                    <a href="feature.html">Features</a>
+                    <a href="howitworks.html">How it Works</a>
+                    <a href="about.html">About</a>
+                </div>
+            </div>
+            <div class="nav-right">
+                <a href="login.html" class="btn-login">LOG IN</a>
+                <a href="signup.html" class="btn-signup">SIGN UP</a>
+            </div>
+            <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+        </nav>
+    </header>
+
+    <div class="overlay" id="overlay"></div>
+    <nav class="side-menu" id="sideMenu">
+        <button class="close-btn" id="closeBtn">&times;</button>
+        <a href="home.html">Home</a>
+        <a href="feature.html">Features</a>
+        <a href="howitworks.html">How it Works</a>
+        <a href="about.html">About</a>
+        <div class="side-auth">
+            <a href="login.html" class="btn-login">LOG IN</a>
+            <a href="signup.html" class="btn-signup">SIGN UP</a>
+        </div>
+    </nav>
+
+    <div class="form-wrapper">
+        <div class="form-card">
+            <h2>Login</h2>
+            <div class="field">
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="Username" required>
+            </div>
+            <div class="field">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Password" required>
+            </div>
+            <button type="button" onclick="handleLogin()">Log In</button>
+            <p class="form-footer">Don't have an account? <a href="signup.html">Sign up</a></p>
+        </div>
+    </div>
+
+    <script>
+        const hamburger = document.getElementById('hamburger');
+        const sideMenu = document.getElementById('sideMenu');
+        const overlay = document.getElementById('overlay');
+        const closeBtn = document.getElementById('closeBtn');
+        function openMenu() { sideMenu.classList.add('open'); overlay.classList.add('active'); hamburger.classList.add('open'); document.body.style.overflow = 'hidden'; }
+        function closeMenu() { sideMenu.classList.remove('open'); overlay.classList.remove('active'); hamburger.classList.remove('open'); document.body.style.overflow = ''; }
+        hamburger.addEventListener('click', openMenu);
+        closeBtn.addEventListener('click', closeMenu);
+        overlay.addEventListener('click', closeMenu);
+
+        function handleLogin() {
+            const user = document.getElementById('username').value;
+            if (user === 'Khayle') {
+                window.location.href = 'manager/dashboard.html';
+            } else if (user === 'Emay') {
+                window.location.href = 'employee/dashboard.html';
+            }
+        }
+    </script>
+</body>
+
+</html>

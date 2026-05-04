@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KhayleHR – How It Works</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Ubuntu', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: ghostwhite;
+        }
+
+        /* ── NAV ── */
+        header {
+            background-color: #789ecb;
+            height: 63px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 1.9rem;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .logo-text span {
+            color: #0d3462;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #0d3462;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1.3rem;
+        }
+
+        .nav-right a {
+            text-decoration: none;
+            padding: 8px 18px;
+            border-radius: 5px;
+            font-weight: 500;
+            transition: all 0.2s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-login {
+            background: white;
+            color: #0d3462;
+        }
+
+        .btn-login:hover {
+            background: #071d36;
+            color: white;
+            transform: scale(0.95);
+        }
+
+        .btn-signup {
+            background: #0d3462;
+            color: white;
+        }
+
+        .btn-signup:hover {
+            background: #071d36;
+            transform: scale(0.95);
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 4px;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: white;
+            border-radius: 3px;
+            transition: all 0.3s;
+        }
+
+        .hamburger.open span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+
+        .hamburger.open span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.open span:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 200;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .side-menu {
+            position: fixed;
+            top: 0;
+            right: -280px;
+            width: 260px;
+            height: 100vh;
+            background: #6383a9;
+            z-index: 300;
+            padding: 80px 30px 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: right 0.3s ease;
+        }
+
+        .side-menu.open {
+            right: 0;
+        }
+
+        .side-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            transition: color 0.2s;
+        }
+
+        .side-menu a:hover {
+            color: #789ecb;
+        }
+
+        .side-menu .side-auth {
+            margin-top: 20px;
+            width: 90%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border-bottom: none;
+            padding: 0;
+        }
+
+        .side-menu .side-auth a {
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            border-bottom: none;
+        }
+
+        .side-menu .side-auth .btn-login {
+            background: white;
+            color: #0d3462;
+        }
+
+        .side-menu .side-auth .btn-signup {
+            background: #789ecb;
+            color: white;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+        }
+
+        /* ── CONTENT ── */
+        .page-wrapper {
+            padding: 3rem 4rem;
+            min-height: calc(100vh - 63px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeUp 0.5s ease both;
+        }
+
+        .page-title h6 {
+            color: #071d36;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .page-title h1 {
+            font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+            color: #6383a9;
+        }
+
+        /* Desktop: zigzag 4-column grid with alternating cards */
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(2, auto);
+            gap: 20px;
+        }
+
+        /* Row 1: cards in columns 1 and 3 */
+        .step-1 {
+            grid-column: 1;
+            grid-row: 1;
+            animation: fadeUp 0.5s 0.1s ease both;
+        }
+
+        .step-2 {
+            grid-column: 2;
+            grid-row: 2;
+            animation: fadeUp 0.5s 0.3s ease both;
+        }
+
+        .step-3 {
+            grid-column: 3;
+            grid-row: 1;
+            animation: fadeUp 0.5s 0.5s ease both;
+        }
+
+        .step-4 {
+            grid-column: 4;
+            grid-row: 2;
+            animation: fadeUp 0.5s 0.7s ease both;
+        }
+
+        .step-card {
+            background-color: #c9d0e3;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            padding: 24px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            transition: transform 0.2s;
+        }
+
+        .step-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .step-num {
+            height: 54px;
+            width: 110px;
+            background-color: #0d3462;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: 700;
+            transition: background 0.2s 0.1s, color 0.2s 0.1s;
+        }
+
+        .step-card:hover .step-num {
+            background: white;
+            color: #0d3462;
+        }
+
+        .step-body {
+            text-align: center;
+        }
+
+        .step-body h4 {
+            font-size: 1.2rem;
+            color: #071d36;
+            margin-bottom: 8px;
+        }
+
+        .step-body p {
+            font-size: 1rem;
+            color: #0d3462;
+            line-height: 1.5;
+            word-spacing: 1px;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 1100px) {
+            .page-wrapper {
+                padding: 2.5rem 2rem;
+            }
+        }
+
+        @media (max-width: 900px) {
+
+            /* 2×2 grid, no offset */
+            .steps-grid {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: auto;
+                gap: 20px;
+            }
+
+            .step-1,
+            .step-2,
+            .step-3,
+            .step-4 {
+                grid-column: auto;
+                grid-row: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+
+            .nav-links,
+            .nav-right {
+                display: none;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            nav {
+                padding: 0 20px;
+            }
+
+            .page-wrapper {
+                padding: 2rem 1.5rem;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .steps-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <nav>
+            <div class="nav-left">
+                <span class="logo-text">Khayle<span>HR</span></span>
+                <div class="nav-links">
+                    <a href="home.html">Home</a>
+                    <a href="feature.html">Features</a>
+                    <a href="howitworks.html">How it Works</a>
+                    <a href="about.html">About</a>
+                </div>
+            </div>
+            <div class="nav-right">
+                <a href="login.html" class="btn-login">LOG IN</a>
+                <a href="signup.html" class="btn-signup">SIGN UP</a>
+            </div>
+            <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+        </nav>
+    </header>
+
+    <div class="overlay" id="overlay"></div>
+    <nav class="side-menu" id="sideMenu">
+        <button class="close-btn" id="closeBtn">&times;</button>
+        <a href="home.html">Home</a>
+        <a href="feature.html">Features</a>
+        <a href="howitworks.html">How it Works</a>
+        <a href="about.html">About</a>
+        <div class="side-auth">
+            <a href="login.html" class="btn-login">LOG IN</a>
+            <a href="signup.html" class="btn-signup">SIGN UP</a>
+        </div>
+    </nav>
+
+    <div class="page-wrapper">
+        <div class="page-title">
+            <h6>THE PROCESS</h6>
+            <h1>How KhayleHR Works</h1>
+        </div>
+        <div class="steps-grid">
+            <div class="step-card step-1">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                    <h4>Collect Feedback</h4>
+                    <p>Employees submit feedback, pulse responses, or raise concerns through any device — anonymously or
+                        identified.</p>
+                </div>
+            </div>
+            <div class="step-card step-2">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                    <h4>Analyze Data</h4>
+                    <p>AI-powered sentiment analysis aggregates responses into actionable insights and trend reports for
+                        HR leaders.</p>
+                </div>
+            </div>
+            <div class="step-card step-3">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                    <h4>Communicate Back</h4>
+                    <p>Leaders acknowledge feedback and share updates, demonstrating responsiveness and building trust
+                        in the change process.</p>
+                </div>
+            </div>
+            <div class="step-card step-4">
+                <div class="step-num">4</div>
+                <div class="step-body">
+                    <h4>Drive Action</h4>
+                    <p>Assign tasks, track resolutions, and measure the impact of changes — creating a continuous
+                        improvement loop.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const hamburger = document.getElementById('hamburger');
+        const sideMenu = document.getElementById('sideMenu');
+        const overlay = document.getElementById('overlay');
+        const closeBtn = document.getElementById('closeBtn');
+        function openMenu() { sideMenu.classList.add('open'); overlay.classList.add('active'); hamburger.classList.add('open'); document.body.style.overflow = 'hidden'; }
+        function closeMenu() { sideMenu.classList.remove('open'); overlay.classList.remove('active'); hamburger.classList.remove('open'); document.body.style.overflow = ''; }
+        hamburger.addEventListener('click', openMenu);
+        closeBtn.addEventListener('click', closeMenu);
+        overlay.addEventListener('click', closeMenu);
+    </script>
+</body>
+
+</html>
